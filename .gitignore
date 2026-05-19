@@ -1,0 +1,19 @@
+# Design/source archives and large working files
+*.zip
+*.psd
+*.aep
+*.ai
+*.mp4
+
+# Workshop/source material not needed for the published website
+4 lottie教程/
+中期作业 杜海洋 薛天任/
+书法迷_单字透明png打包/
+图层分层/
+瓷 动画文件夹/
+瓷器开片/
+瓷器开片 ai处理/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

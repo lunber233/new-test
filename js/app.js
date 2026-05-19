@@ -321,7 +321,7 @@
             if (GLTFLoader) {
                 var loader = new GLTFLoader();
                 loader.load(
-                    '瓷器模型/汝窑.glb',
+                    '瓷器模型/汝窑24.9.glb',
                     function (gltf) {
                         var model = gltf.scene;
 
