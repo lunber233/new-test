@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瓷</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/porcelain-maker.css">
+</head>
+<body>
+
+    <!-- 主内容区：五边形导航 -->
+    <div id="main-content">
+        <!-- 中心 "瓷" 字 -->
+        <div id="center-char">瓷</div>
+        <!-- 五个窑口标签 -->
+        <div class="kiln-node" data-index="0">
+            <span class="kiln-name">汝窑</span>
+            <img class="kiln-img" src="images/汝窑.png" alt="汝窑">
+        </div>
+        <div class="kiln-node" data-index="1">
+            <span class="kiln-name">官窑</span>
+            <img class="kiln-img" src="images/官窑.png" alt="官窑">
+        </div>
+        <div class="kiln-node" data-index="2">
+            <span class="kiln-name">哥窑</span>
+            <img class="kiln-img" src="images/哥窑.png" alt="哥窑">
+        </div>
+        <div class="kiln-node" data-index="3">
+            <span class="kiln-name">钧窑</span>
+            <img class="kiln-img" src="images/钧窑.png" alt="钧窑">
+        </div>
+        <div class="kiln-node" data-index="4">
+            <span class="kiln-name">定窑</span>
+            <img class="kiln-img" src="images/定窑.png" alt="定窑">
+        </div>
+    </div>
+
+    <!-- 诗句与介绍展示层 -->
+    <div id="poem-overlay">
+        <div id="poem-text"></div>
+        <div id="intro-panel">
+            <div id="intro-model"></div>
+            <div id="intro-text-wrap">
+                <h3 id="intro-title"></h3>
+                <p id="intro-content"></p>
+                <button id="intro-close">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 制瓷体验系统 -->
+    <div id="porcelain-maker">
+        <button id="maker-exit">退出</button>
+
+        <div id="maker-header">
+            <h2 id="maker-title">交互式古法瓷器制作</h2>
+            <p id="maker-subtitle">模拟真实制瓷9大工序，分步操作学习瓷器制作工艺</p>
+            <div id="maker-progress">
+                <div class="progress-step active" data-step="0"><span>1</span>选料揉泥</div>
+                <div class="progress-step" data-step="1"><span>2</span>器型塑形</div>
+                <div class="progress-step" data-step="2"><span>3</span>修坯整形</div>
+                <div class="progress-step" data-step="3"><span>4</span>晾干控干</div>
+                <div class="progress-step" data-step="4"><span>5</span>素烧打底</div>
+                <div class="progress-step" data-step="5"><span>6</span>纹饰绘制</div>
+                <div class="progress-step" data-step="6"><span>7</span>釉料上釉</div>
+                <div class="progress-step" data-step="7"><span>8</span>二次烧制</div>
+                <div class="progress-step" data-step="8"><span>9</span>成品展示</div>
+            </div>
+        </div>
+
+        <div id="maker-step-container"></div>
+
+        <div id="maker-feedback">
+            <div id="maker-feedback-icon"></div>
+            <div id="maker-feedback-content"></div>
+            <button id="maker-feedback-close">知道了</button>
+        </div>
+
+        <div id="maker-knowledge-base">
+            <h3>瓷器工艺知识点大全</h3>
+            <div id="maker-kb-content"></div>
+            <button id="maker-kb-close">关闭</button>
+        </div>
+
+        <div id="maker-final">
+            <div id="maker-final-visual"></div>
+            <div id="maker-final-right">
+                <div id="maker-final-report"></div>
+                <div id="maker-final-actions">
+                    <button id="maker-restart">重新制作</button>
+                    <button id="maker-knowledge-btn">知识点大全</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js 3D渲染库（本地文件，兼容 file:// 协议） -->
+    <script src="libs/three.min.js"></script>
+    <script src="libs/GLTFLoader.js"></script>
+    <!-- 应用脚本 -->
+    <script src="js/porcelain-maker.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
