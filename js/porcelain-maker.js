@@ -120,6 +120,15 @@ isDragging: false,
 lastX: 0
 };
 
+function updateMakerBackground(stepIndex) {
+var maker = document.getElementById('porcelain-maker');
+if (!maker) return;
+var maxIndex = Math.max(1, STEP_DATA.length - 1);
+var clamped = Math.max(0, Math.min(stepIndex, maxIndex));
+var percent = clamped * 100 / maxIndex;
+maker.style.setProperty('--maker-bg-x', percent + '%');
+}
+
 function initMaker() {
 cleanupFinal3D();
 currentStep = 0;
@@ -127,11 +136,13 @@ selections = new Array(STEP_DATA.length).fill(null);
 state = {};
 document.getElementById('maker-final').classList.remove('show');
 document.getElementById('maker-step-container').classList.add('show');
+updateMakerBackground(0);
 renderStep(0);
 renderProgress();
 }
 
 function renderStep(index) {
+updateMakerBackground(index);
 var container = document.getElementById('maker-step-container');
 var step = STEP_DATA[index];
 var html = '<div class="step-title">' + step.title + '</div>';
@@ -248,6 +259,7 @@ steps[i].classList.add('active');
 function finishMaking() {
 document.getElementById('maker-step-container').classList.remove('show');
 document.getElementById('maker-final').classList.add('show');
+updateMakerBackground(STEP_DATA.length - 1);
 buildState();
 renderFinalResult();
 }

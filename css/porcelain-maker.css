@@ -6,12 +6,19 @@
     width: 100vw;
     height: 100vh;
     background-color: #f5f0eb;
+    background-image:
+        linear-gradient(90deg, rgba(245,240,235,0.9), rgba(245,240,235,0.7) 34%, rgba(245,240,235,0.62)),
+        url("../制瓷工序文献/制瓷工序横向长图.jpg");
+    background-size: auto 100%, auto 100%;
+    background-position: center, var(--maker-bg-x, 0%) center;
+    background-repeat: no-repeat;
     color: #2a2a2a;
     z-index: 200;
     display: none;
     flex-direction: column;
     overflow: hidden;
     font-family: "Noto Serif SC", "Source Han Serif CN", serif;
+    transition: background-position 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 #porcelain-maker.active {
@@ -46,6 +53,8 @@
     text-align: center;
     border-bottom: 1px solid #e0dcd5;
     flex-shrink: 0;
+    background-color: rgba(245,240,235,0.82);
+    backdrop-filter: blur(3px);
 }
 
 #maker-title {
@@ -171,7 +180,7 @@
 }
 
 .maker-option {
-    background-color: #fff;
+    background-color: rgba(255,255,255,0.9);
     border: 1px solid #d5d0c8;
     border-radius: 8px;
     padding: 20px 16px;
@@ -185,13 +194,13 @@
 
 .maker-option:hover {
     border-color: #c9a96e;
-    background-color: #faf8f5;
+    background-color: rgba(250,248,245,0.96);
     transform: translateY(-2px);
 }
 
 .maker-option.selected {
     border-color: #c9a96e;
-    background-color: #f5efe6;
+    background-color: rgba(245,239,230,0.96);
     color: #c9a96e;
     box-shadow: 0 0 12px rgba(201, 169, 110, 0.15);
 }
@@ -585,7 +594,7 @@
 #maker-final-report {
     width: 100%;
     max-width: 700px;
-    background-color: #fff;
+    background-color: rgba(255,255,255,0.92);
     border: 1px solid #e0dcd5;
     border-radius: 8px;
     padding: 24px 32px;
