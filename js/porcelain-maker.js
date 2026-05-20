@@ -109,8 +109,19 @@ options: [
 var currentStep = 0;
 var selections = [];
 var state = {};
+var final3D = {
+renderer: null,
+scene: null,
+camera: null,
+model: null,
+animationId: null,
+resizeHandler: null,
+isDragging: false,
+lastX: 0
+};
 
 function initMaker() {
+cleanupFinal3D();
 currentStep = 0;
 selections = new Array(STEP_DATA.length).fill(null);
 state = {};
@@ -305,16 +316,225 @@ var map = {'透明釉':'#ddd','青釉':'#5a8e95','白釉':'#d0d0d0','霁蓝釉':
 return map[glaze] || '#ddd';
 }
 
+function cleanupFinal3D() {
+if (final3D.animationId) {
+cancelAnimationFrame(final3D.animationId);
+final3D.animationId = null;
+}
+if (final3D.resizeHandler) {
+window.removeEventListener('resize', final3D.resizeHandler);
+final3D.resizeHandler = null;
+}
+if (final3D.renderer) {
+final3D.renderer.dispose();
+if (final3D.renderer.domElement && final3D.renderer.domElement.parentNode) {
+final3D.renderer.domElement.parentNode.removeChild(final3D.renderer.domElement);
+}
+}
+final3D.renderer = null;
+final3D.scene = null;
+final3D.camera = null;
+final3D.model = null;
+final3D.isDragging = false;
+}
+
+function hexToNumber(hex) {
+return parseInt(String(hex).replace('#', ''), 16);
+}
+
+function getProfilePoints(shapeClass, qualityType) {
+var profiles = {
+cup: [[0.42,0],[0.52,0.08],[0.62,0.42],[0.74,0.98],[0.8,1.18],[0.74,1.26]],
+bowl: [[0.32,0],[0.72,0.08],[1.12,0.42],[1.34,0.78],[1.38,0.9],[1.26,0.98]],
+vase: [[0.36,0],[0.58,0.12],[0.78,0.55],[0.64,1.08],[0.36,1.5],[0.34,1.86],[0.48,2.02],[0.42,2.12]],
+plate: [[0.28,0],[1.2,0.03],[1.42,0.14],[1.55,0.22],[1.48,0.32],[0.46,0.3]],
+brushpot: [[0.58,0],[0.68,0.06],[0.72,1.55],[0.7,1.72],[0.6,1.78]],
+jar: [[0.42,0],[0.7,0.12],[0.9,0.55],[0.82,1.12],[0.52,1.42],[0.44,1.62],[0.58,1.74],[0.5,1.84]]
+};
+var src = profiles[shapeClass] || profiles.cup;
+var wobble = qualityType === 'broken' ? 0.1 : (qualityType === 'flawed' ? 0.035 : 0);
+return src.map(function(pair, index) {
+var offset = wobble ? Math.sin(index * 1.7) * wobble : 0;
+return new THREE.Vector2(Math.max(0.08, pair[0] + offset), pair[1]);
+});
+}
+
+function centerObject(object) {
+var box = new THREE.Box3().setFromObject(object);
+var center = box.getCenter(new THREE.Vector3());
+var size = box.getSize(new THREE.Vector3());
+object.position.x -= center.x;
+object.position.z -= center.z;
+object.position.y -= center.y;
+var maxDim = Math.max(size.x, size.y, size.z);
+if (maxDim > 0) {
+object.scale.setScalar(2.25 / maxDim);
+}
+}
+
+function addCrackLines(group, shapeClass, qualityType) {
+if (qualityType === 'perfect') return;
+var material = new THREE.LineBasicMaterial({
+color: qualityType === 'broken' ? 0x5b4035 : 0x7d8d8f,
+transparent: true,
+opacity: qualityType === 'broken' ? 0.7 : 0.32
+});
+var count = qualityType === 'broken' ? 15 : 7;
+var height = shapeClass === 'plate' ? 0.22 : 1.25;
+for (var i = 0; i < count; i++) {
+var angle = (Math.PI * 2 / count) * i;
+var radius = shapeClass === 'plate' ? 0.92 : 0.7 + (i % 3) * 0.08;
+var y = shapeClass === 'plate' ? 0.05 + (i % 3) * 0.05 : 0.22 + (i % 5) * height / 5;
+var points = [];
+for (var j = 0; j < 4; j++) {
+var a = angle + Math.sin(j + i) * 0.08;
+points.push(new THREE.Vector3(Math.cos(a) * radius, y + j * 0.12, Math.sin(a) * radius));
+}
+var geometry = new THREE.BufferGeometry().setFromPoints(points);
+group.add(new THREE.Line(geometry, material));
+}
+}
+
+function addSurfaceDecoration(group, shapeClass, glazeColor) {
+if (shapeClass === 'plate') return;
+var ringMaterial = new THREE.MeshBasicMaterial({
+color: glazeColor > 0x444444 ? 0x315f7a : 0xd8e5ea,
+transparent: true,
+opacity: 0.38,
+side: THREE.DoubleSide
+});
+var radii = shapeClass === 'vase' ? [0.5, 0.62, 0.72] : [0.55, 0.68];
+for (var i = 0; i < radii.length; i++) {
+var ring = new THREE.Mesh(new THREE.TorusGeometry(radii[i], 0.008, 8, 96), ringMaterial);
+ring.rotation.x = Math.PI / 2;
+ring.position.y = 0.35 + i * 0.34;
+group.add(ring);
+}
+}
+
+function createPorcelainModel(THREE, shapeClass, result, glazeHex) {
+var group = new THREE.Group();
+var material = new THREE.MeshPhysicalMaterial({
+color: hexToNumber(glazeHex),
+roughness: result.type === 'broken' ? 0.55 : 0.18,
+metalness: 0,
+clearcoat: result.type === 'broken' ? 0.15 : 0.85,
+clearcoatRoughness: result.type === 'flawed' ? 0.24 : 0.1,
+reflectivity: 0.55,
+side: THREE.DoubleSide
+});
+var geometry = new THREE.LatheGeometry(getProfilePoints(shapeClass, result.type), 96);
+var body = new THREE.Mesh(geometry, material);
+body.castShadow = true;
+body.receiveShadow = true;
+group.add(body);
+if (shapeClass === 'cup') {
+var handle = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.045, 16, 48, Math.PI * 1.45), material);
+handle.position.set(0.72, 0.58, 0);
+handle.rotation.y = Math.PI / 2;
+group.add(handle);
+}
+addSurfaceDecoration(group, shapeClass, hexToNumber(glazeHex));
+addCrackLines(group, shapeClass, result.type);
+centerObject(group);
+return group;
+}
+
+function initFinal3D(container, shapeClass, result) {
+cleanupFinal3D();
+var THREE = window.THREE;
+if (!THREE || typeof THREE.Scene !== 'function') {
+container.innerHTML = '<div class="model-fallback">3D 引擎未加载，请检查 libs/three.min.js</div>';
+return;
+}
+var viewport = container.querySelector('.final-model-viewport');
+if (!viewport) return;
+var width = viewport.clientWidth || 360;
+var height = viewport.clientHeight || 360;
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf7f3ed);
+var camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+camera.position.set(0, 0.65, 4.2);
+camera.lookAt(0, 0, 0);
+var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(width, height);
+renderer.shadowMap.enabled = true;
+viewport.appendChild(renderer.domElement);
+var ambient = new THREE.AmbientLight(0xffffff, 0.7);
+scene.add(ambient);
+var key = new THREE.DirectionalLight(0xffffff, 1.1);
+key.position.set(4, 6, 5);
+key.castShadow = true;
+scene.add(key);
+var fill = new THREE.DirectionalLight(0xb8d8ff, 0.45);
+fill.position.set(-5, 2, -4);
+scene.add(fill);
+var base = new THREE.Mesh(
+new THREE.CylinderGeometry(1.45, 1.45, 0.06, 96),
+new THREE.MeshStandardMaterial({color:0xd8c7ad, roughness:0.48})
+);
+base.position.y = -1.28;
+base.receiveShadow = true;
+scene.add(base);
+var model = createPorcelainModel(THREE, shapeClass, result, getGlazeColor(state.glaze));
+scene.add(model);
+final3D.renderer = renderer;
+final3D.scene = scene;
+final3D.camera = camera;
+final3D.model = model;
+function resize() {
+if (!final3D.renderer || !final3D.camera) return;
+var w = viewport.clientWidth || 360;
+var h = viewport.clientHeight || 360;
+final3D.camera.aspect = w / h;
+final3D.camera.updateProjectionMatrix();
+final3D.renderer.setSize(w, h);
+}
+final3D.resizeHandler = resize;
+window.addEventListener('resize', resize);
+viewport.addEventListener('pointerdown', function(e) {
+final3D.isDragging = true;
+final3D.lastX = e.clientX;
+viewport.setPointerCapture(e.pointerId);
+});
+viewport.addEventListener('pointermove', function(e) {
+if (!final3D.isDragging || !final3D.model) return;
+var dx = e.clientX - final3D.lastX;
+final3D.model.rotation.y += dx * 0.01;
+final3D.lastX = e.clientX;
+});
+viewport.addEventListener('pointerup', function() {
+final3D.isDragging = false;
+});
+viewport.addEventListener('pointercancel', function() {
+final3D.isDragging = false;
+});
+viewport.addEventListener('pointerleave', function() {
+final3D.isDragging = false;
+});
+function animate() {
+final3D.animationId = requestAnimationFrame(animate);
+if (final3D.model && !final3D.isDragging) {
+final3D.model.rotation.y += 0.006;
+}
+renderer.render(scene, camera);
+}
+animate();
+}
+
 function renderFinalResult() {
 var result = determineResult();
 var score = calculateScore();
 var shapeMap = {'茶杯':'cup','碗':'bowl','花瓶':'vase','茶盘':'plate','笔筒':'brushpot','瓷罐':'jar'};
 var shapeClass = shapeMap[state.shape] || 'cup';
 var visual = document.getElementById('maker-final-visual');
-var html = '<div class="porcelain-visual ' + shapeClass + '" style="--glaze-color:' + getGlazeColor(state.glaze) + ';--glaze-dark:' + getGlazeDark(state.glaze) + '"></div>';
+var html = '<div class="final-model-viewport" aria-label="自定义瓷器3D模型"></div>';
 html += '<div class="result-label ' + result.type + '">' + result.label + '</div>';
-html += '<p style="color:#aaa;font-size:14px;letter-spacing:1px;">综合得分：' + score + ' / 100</p>';
+html += '<p class="final-score">综合得分：' + score + ' / 100</p>';
+html += '<p class="final-model-hint">拖动模型可旋转查看</p>';
 visual.innerHTML = html;
+initFinal3D(visual, shapeClass, result);
 var report = document.getElementById('maker-final-report');
 var rHtml = '<div class="report-title">《瓷器工艺学习报告》</div>';
 for (var i = 0; i < STEP_DATA.length; i++) {
@@ -388,6 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
 var exitBtn = document.getElementById('maker-exit');
 if (exitBtn) {
 exitBtn.addEventListener('click', function() {
+cleanupFinal3D();
 document.getElementById('porcelain-maker').classList.remove('active');
 document.getElementById('main-content').style.display = '';
 });
