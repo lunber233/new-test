@@ -4,34 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>瓷</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/porcelain-maker.css">
+    <link rel="stylesheet" href="css/style.css?v=20260611-opening-quotes-1">
+    <link rel="stylesheet" href="css/porcelain-maker.css?v=20260604-gesture-glazing-entry-refresh">
 </head>
 <body>
 
+    <!-- 网站开场动画 -->
+    <div id="site-opening" aria-label="网站开场动画">
+        <svg class="opening-bg-pattern" aria-hidden="true">
+            <defs>
+                <pattern id="opening-cloud-pattern" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+                    <path d="M 20 60 C 30 45, 50 45, 60 60 C 70 75, 90 75, 100 60" />
+                    <path d="M 0 30 C 10 15, 30 15, 40 30" />
+                    <path d="M 80 90 C 90 75, 110 75, 120 90" />
+                    <circle cx="60" cy="60" r="1.5" />
+                    <circle cx="10" cy="10" r="1" />
+                    <circle cx="110" cy="110" r="1" />
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#opening-cloud-pattern)" />
+        </svg>
+        <div class="opening-cloud opening-cloud-a"></div>
+        <div class="opening-cloud opening-cloud-b"></div>
+        <div class="opening-pattern opening-pattern-top"></div>
+        <div class="opening-pattern opening-pattern-bottom"></div>
+        <div class="opening-ripples" aria-hidden="true"></div>
+        <div id="opening-kiln-quotes" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
+        <div class="opening-stage">
+            <button id="opening-vase" class="opening-plate" type="button" aria-label="点击瓷瓶进入网站">
+                <div class="opening-plate-ring"></div>
+                <div class="opening-plate-glaze"></div>
+                <svg class="opening-vase-svg" viewBox="0 0 160 210" aria-hidden="true">
+                    <path class="opening-vase-fill" d="M 80 4 L 90 4 C 93 4, 96 8, 96 18 L 96 30 C 96 52, 143 70, 143 90 C 143 128, 124 160, 110 180 L 110 198 L 50 198 L 50 180 C 36 160, 17 128, 17 90 C 17 70, 64 52, 64 30 L 64 18 C 64 8, 67 4, 70 4 Z" />
+                    <path class="opening-vase-outline" d="M 80 4 L 90 4 C 93 4, 96 8, 96 18 L 96 30 C 96 52, 143 70, 143 90 C 143 128, 124 160, 110 180 L 110 198 L 50 198 L 50 180 C 36 160, 17 128, 17 90 C 17 70, 64 52, 64 30 L 64 18 C 64 8, 67 4, 70 4 Z" />
+                    <g class="opening-vase-decoration">
+                        <path d="M 64 22 L 96 22" />
+                        <path d="M 64 27 L 96 27" />
+                        <path d="M 35 80 C 32 72, 38 64, 46 67 C 53 70, 54 78, 48 82 C 42 86, 33 84, 35 80" />
+                        <path d="M 125 80 C 128 72, 122 64, 114 67 C 107 70, 106 78, 112 82 C 118 86, 127 84, 125 80" />
+                        <path d="M 50 175 Q 62 170, 65 175 Q 68 180, 80 175 Q 92 170, 95 175 Q 98 180, 110 175" />
+                        <path d="M 50 183 L 110 183" />
+                        <path d="M 50 188 L 110 188" />
+                        <path d="M 72.6 99.8 Q 80.0 92.0, 87.4 99.8" />
+                        <path d="M 80.0 100.0 Q 98.4 99.6, 98.2 118.0" />
+                        <path d="M 87.4 136.2 Q 80.0 144.0, 72.6 136.2" />
+                        <path d="M 61.8 118.0 Q 61.6 99.6, 80.0 100.0" />
+                        <path d="M 75.4 108.1 Q 80.0 104.0, 84.6 108.1" />
+                        <path d="M 89.9 113.4 Q 94.0 118.0, 89.9 122.6" />
+                        <path d="M 84.6 127.9 Q 80.0 132.0, 75.4 127.9" />
+                        <path d="M 70.1 122.6 Q 66.0 118.0, 70.1 113.4" />
+                        <circle cx="80" cy="118" r="4" />
+                    </g>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <!-- 主内容区：五边形导航 -->
     <div id="main-content">
+        <div id="home-bg-carousel" aria-hidden="true">
+            <div class="home-bg-slide active"></div>
+            <div class="home-bg-slide"></div>
+        </div>
+        <div id="home-bg-reveal" aria-hidden="true"></div>
+        <div id="home-hover-model" aria-hidden="true"></div>
+        <div id="home-puppet-figures" aria-hidden="true">
+            <div class="home-puppet-row home-puppet-row-top">
+                <img class="home-puppet-figure" src="木偶人物素材/p1/transition-figures.png" alt="">
+                <img class="home-puppet-figure" src="木偶人物素材/p2/陶瓷谱图册.十四开.纸本设色（28.8x30.7厘米）台北故宫博物院藏_04(1).png" alt="">
+                <img class="home-puppet-figure" src="木偶人物素材/p3/陶瓷谱图册.十四开.纸本设色（28.8x30.7厘米）台北故宫博物院藏_05(1).png" alt="">
+                <img class="home-puppet-figure" src="木偶人物素材/p4/陶瓷谱图册.十四开.纸本设色（28.8x30.7厘米）台北故宫博物院藏_06(1).png" alt="">
+            </div>
+            <div class="home-puppet-row home-puppet-row-bottom">
+                <img class="home-puppet-figure" src="木偶人物素材/p5/陶瓷谱图册.十四开.纸本设色（28.8x30.7厘米）台北故宫博物院藏_08(1).png" alt="">
+                <img class="home-puppet-figure" src="木偶人物素材/p6/陶瓷谱图册.十四开.纸本设色（28.8x30.7厘米）台北故宫博物院藏_09(1).png" alt="">
+                <img class="home-puppet-figure" src="木偶人物素材/p7/厘米）台北故宫博物院藏_11(1).png" alt="">
+                <img class="home-puppet-figure" src="木偶人物素材/p8/陶瓷谱图宫博物院藏_11(1).png" alt="">
+            </div>
+        </div>
+        <div id="home-kiln-intro" aria-live="polite">
+            <div id="home-kiln-intro-title"></div>
+            <div id="home-kiln-intro-body"></div>
+        </div>
+        <div id="maker-word-left" class="maker-fly-word" aria-hidden="true">制</div>
+        <div id="maker-word-right" class="maker-fly-word" aria-hidden="true">瓷</div>
         <!-- 中心 "瓷" 字 -->
         <div id="center-char">瓷</div>
         <!-- 五个窑口标签 -->
-        <div class="kiln-node" data-index="0">
-            <span class="kiln-name">汝窑</span>
+        <div class="kiln-node" data-index="0" style="--kiln-bg: url('images/汝窑 新.jpg');">
+            <span class="kiln-name">汝</span>
             <img class="kiln-img" src="images/汝窑.png" alt="汝窑">
         </div>
-        <div class="kiln-node" data-index="1">
-            <span class="kiln-name">官窑</span>
+        <div class="kiln-node" data-index="1" style="--kiln-bg: url('images/官窑 新.jpg');">
+            <span class="kiln-name">官</span>
             <img class="kiln-img" src="images/官窑.png" alt="官窑">
         </div>
-        <div class="kiln-node" data-index="2">
-            <span class="kiln-name">哥窑</span>
+        <div class="kiln-node" data-index="2" style="--kiln-bg: url('images/哥窑 新.jpg');">
+            <span class="kiln-name">哥</span>
             <img class="kiln-img" src="images/哥窑.png" alt="哥窑">
         </div>
-        <div class="kiln-node" data-index="3">
-            <span class="kiln-name">钧窑</span>
+        <div class="kiln-node" data-index="3" style="--kiln-bg: url('images/钧窑 新.jpg');">
+            <span class="kiln-name">钧</span>
             <img class="kiln-img" src="images/钧窑.png" alt="钧窑">
         </div>
-        <div class="kiln-node" data-index="4">
-            <span class="kiln-name">定窑</span>
+        <div class="kiln-node" data-index="4" style="--kiln-bg: url('images/定窑.png');">
+            <span class="kiln-name">定</span>
             <img class="kiln-img" src="images/定窑.png" alt="定窑">
         </div>
     </div>
@@ -55,17 +132,17 @@
 
         <div id="maker-header">
             <h2 id="maker-title">交互式古法瓷器制作</h2>
-            <p id="maker-subtitle">模拟真实制瓷9大工序，分步操作学习瓷器制作工艺</p>
-            <div id="maker-progress">
-                <div class="progress-step active" data-step="0"><span>1</span>选料揉泥</div>
-                <div class="progress-step" data-step="1"><span>2</span>器型塑形</div>
-                <div class="progress-step" data-step="2"><span>3</span>修坯整形</div>
-                <div class="progress-step" data-step="3"><span>4</span>晾干控干</div>
-                <div class="progress-step" data-step="4"><span>5</span>素烧打底</div>
-                <div class="progress-step" data-step="5"><span>6</span>纹饰绘制</div>
-                <div class="progress-step" data-step="6"><span>7</span>釉料上釉</div>
-                <div class="progress-step" data-step="7"><span>8</span>二次烧制</div>
-                <div class="progress-step" data-step="8"><span>9</span>成品展示</div>
+            <p id="maker-subtitle">参考传统八步制瓷工序，分步操作学习瓷器制作工艺</p>
+            <div id="maker-progress" style="--maker-progress-percent: 0%;">
+                <div id="maker-progress-track" aria-hidden="true"><div id="maker-progress-fill"></div></div>
+                <div class="progress-step active" data-step="0"><span>1</span>采石选料</div>
+                <div class="progress-step" data-step="1"><span>2</span>练泥陈腐</div>
+                <div class="progress-step" data-step="2"><span>3</span>拉坯成型</div>
+                <div class="progress-step" data-step="3"><span>4</span>修坯挖足</div>
+                <div class="progress-step" data-step="4"><span>5</span>绘画装饰</div>
+                <div class="progress-step" data-step="5"><span>6</span>上釉施釉</div>
+                <div class="progress-step" data-step="6"><span>7</span>装匣入窑</div>
+                <div class="progress-step" data-step="7"><span>8</span>窑烧成瓷</div>
             </div>
         </div>
 
@@ -99,8 +176,9 @@
     <script src="libs/three.min.js"></script>
     <script src="libs/GLTFLoader.js"></script>
     <!-- 应用脚本 -->
-    <script src="js/porcelain-maker.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/porcelain-maker.js?v=20260604-solid-gesture-glaze"></script>
+    <script src="js/app.js?v=20260604-home-puppets-hover-1"></script>
+    <script src="js/site-opening.js?v=20260611-opening-quotes-1"></script>
 
 </body>
 </html>
